@@ -12,6 +12,14 @@ async function getAllRecipes(req, res) {
     // const recipes = await Recipe.find().populate("cuisines").exec();
     const recipes = await Recipe.find()
       .populate("occasions")
+      .populate({
+        path: "reviews",
+        model: "Review",
+        populate: {
+          path: "user",
+          model: "User",
+        },
+      })
       .populate("meals")
       .populate("cuisines")
       .populate("tools")
@@ -30,6 +38,7 @@ async function getAllRecipes(req, res) {
           model: "Unit",
         },
       });
+
     // .populate({
     //   path: "ingredients.items.ingredient",
     //   model: "Ingredient",
@@ -67,6 +76,14 @@ async function getRecipeById(req, res) {
           path: "allowedUnits.unit",
           model: "Unit",
         },
+      })
+      .populate({
+        path: "reviews",
+        model: "Review",
+        populate: {
+          path: "user",
+          model: "User",
+        },
       });
     // .populate({
     //   path: "ingredients.items.ingredient",
@@ -78,7 +95,7 @@ async function getRecipeById(req, res) {
       res.status(404).json({ error: "Recipe not found" });
       return;
     }
-
+    console.log(recipe);
     res.json(recipe);
   } catch (error) {
     console.error("Error fetching recipe by ID:", error);

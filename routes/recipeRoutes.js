@@ -6,6 +6,12 @@ const {
   validateCreateRecipe,
 } = require("../middleware/validations/recipeValidation");
 const recipeController = require("../controllers/recipeController");
+const {
+  authenticateToken,
+  isAuthenticated,
+  isReviewOwner,
+} = require("../middleware/authMiddleware");
+const reviewRoutes = require("./reviewRoutes");
 
 // Get all recipes
 router.get("/", recipeController.getAllRecipes);
@@ -27,4 +33,10 @@ router.put("/:id", recipeController.updateRecipe);
 // Delete a recipe
 router.delete("/:id", recipeController.deleteRecipe);
 
+// Use the review routes within the recipe router with a prefix
+router.use("/:id/reviews", authenticateToken, isAuthenticated, reviewRoutes);
+
 module.exports = router;
+
+// Get a specific recipe by ID
+// router.get("/:id/reviews", reviewController.createReview);

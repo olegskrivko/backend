@@ -127,6 +127,12 @@ const recipeSchema = new mongoose.Schema({
     min: 1, // Minimum allowed servings
     max: 10, // Maximum allowed servings
   },
+  reviews: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Review",
+    },
+  ],
   tips: [
     {
       title: {
