@@ -27,7 +27,7 @@ const reviewSchema = new mongoose.Schema(
       //   required: true,
       // },
     },
-    sliders: {
+    ratings: {
       taste: {
         type: Number,
         min: 0,
