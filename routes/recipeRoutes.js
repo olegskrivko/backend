@@ -34,7 +34,8 @@ router.put("/:id", recipeController.updateRecipe);
 router.delete("/:id", recipeController.deleteRecipe);
 
 // Use the review routes within the recipe router with a prefix
-router.use("/:id/reviews", authenticateToken, isAuthenticated, reviewRoutes);
+// router.use("/:id/reviews", authenticateToken, isAuthenticated, reviewRoutes);
+router.use("/:id/reviews", reviewRoutes);
 
 module.exports = router;
 

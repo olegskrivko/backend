@@ -18,6 +18,7 @@ async function getAllRecipes(req, res) {
         populate: {
           path: "user",
           model: "User",
+          select: "username email", // Specify the fields you need
         },
       })
       .populate("meals")
@@ -83,6 +84,7 @@ async function getRecipeById(req, res) {
         populate: {
           path: "user",
           model: "User",
+          select: "username email", // Specify the fields you need
         },
       });
     // .populate({

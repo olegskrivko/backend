@@ -22,7 +22,8 @@ const {
 } = require("../middleware/authMiddleware");
 
 // routes
-router.use("/recipes", authenticateToken, isAuthenticated, recipeRoutes);
+// router.use("/recipes", authenticateToken, isAuthenticated, recipeRoutes);
+router.use("/recipes", recipeRoutes);
 router.use("/meals", mealRoutes);
 router.use("/cuisines", cuisineRoutes);
 router.use("/occasions", occasionRoutes);

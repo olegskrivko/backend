@@ -50,7 +50,16 @@ const getRecipeReviews = async (req, res) => {
     const { id } = req.params; // Get the recipe ID from the URL
 
     // Find the recipe by ID with its populated reviews
-    const recipe = await Recipe.findById(id).populate("reviews");
+    // const recipe = await Recipe.findById(id).populate("reviews");
+    // Find the recipe by ID with its populated reviews
+    const recipe = await Recipe.findById(id).populate({
+      path: "reviews",
+      populate: {
+        path: "user",
+        model: "User",
+        select: "username email", // Add the fields you want to include
+      },
+    });
 
     if (!recipe) {
       return res.status(404).json({ error: "Recipe not found" });

@@ -6,7 +6,7 @@ const authenticateToken = (req, res, next) => {
   if (!authorizationHeader)
     return res
       .status(401)
-      .json({ message: "Authorization failed. No access token." });
+      .json({ message: "Authorization failed. No access tokenZZZ." });
 
   // Extract the token without the "Bearer " prefix
   const token = authorizationHeader.replace("Bearer ", "");
@@ -88,14 +88,14 @@ const isAuthenticated = (req, res, next) => {
   if (!token)
     return res
       .status(401)
-      .json({ message: "Authorization failed. No access token." });
+      .json({ message: "Authorization failed. No access tokenXXX." });
 
   jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
     if (err) {
       console.error("JWT Verification Error:", err);
       return res
         .status(403)
-        .json({ message: "Authorization failed. Could not verify token." });
+        .json({ message: "Authorization failed. Could not verify tokenYYY." });
     }
 
     req.user = decoded;
