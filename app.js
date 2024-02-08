@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const {
   handleKnownErrors,
@@ -27,6 +28,7 @@ const corsOptions = {
 // Enable CORS with options
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser()); // Add this line to use cookieParser middleware
 
 // Routes
 app.use("/api", routes);
