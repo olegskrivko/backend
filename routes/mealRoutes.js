@@ -11,6 +11,9 @@ const mealController = require("../controllers/mealController");
 // Get all meals
 router.get("/", mealController.getMeals);
 
+// Get a specific meal by ID
+router.get("/:id", mealController.getMealById);
+
 // Create a new meal
 router.post(
   "/",

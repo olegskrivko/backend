@@ -13,6 +13,23 @@ async function getMeals(req, res) {
   }
 }
 
+// Get a meal by ID
+async function getMealById(req, res) {
+  const { id } = req.params;
+
+  try {
+    const meal = await Meal.findById(id).populate("recipes");
+    if (!meal) {
+      return res.status(404).json({ error: "Meal not found" });
+    }
+
+    res.status(200).json(meal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
 // Create a new meal
 async function createMeal(req, res) {
   try {
@@ -86,6 +103,7 @@ async function deleteMeal(req, res) {
 
 module.exports = {
   getMeals,
+  getMealById,
   createMeal,
   updateMeal,
   deleteMeal,
