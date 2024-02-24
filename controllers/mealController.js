@@ -1,11 +1,14 @@
 // controllers/mealController.js
 const slugify = require("slugify");
 const Meal = require("../models/mealModel");
+const Recipe = require("../models/recipeModel"); // Import your Recipe model
 
 // Get all meals
 async function getMeals(req, res) {
   try {
-    const meals = await Meal.find();
+    // Use Mongoose's populate to get meals with populated recipes
+    const meals = await Meal.find().populate("recipes");
+    // console.log("meals", meals);
     res.status(200).json(meals);
   } catch (error) {
     console.error(error);
@@ -16,14 +19,120 @@ async function getMeals(req, res) {
 // Get a meal by ID
 async function getMealById(req, res) {
   const { id } = req.params;
-
+  // console.log("id", id);
   try {
     const meal = await Meal.findById(id).populate("recipes");
     if (!meal) {
       return res.status(404).json({ error: "Meal not found" });
     }
-
+    // console.log("meal", meal);
     res.status(200).json(meal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+// 65a9b94e8422af81b441c57c
+// http://localhost:3000/api/meals/65a9b94e8422af81b441c57c?totalTime=240
+
+// Get a meal by ID with optional filtering
+// async function getMealById(req, res) {
+//   const { id } = req.params;
+//   const { totalTime, diets } = req.query;
+
+//   try {
+//     const meal = await Meal.findById(id).populate("recipes");
+
+//     if (!meal) {
+//       return res.status(404).json({ error: "Meal not found" });
+//     }
+
+//     // If cookingTime is provided, filter recipes based on cooking time
+//     let filteredRecipes = meal.recipes;
+//     if (totalTime) {
+//       filteredRecipes = filteredRecipes.filter(
+//         (recipe) => recipe.totalTime <= parseInt(totalTime)
+//       );
+//     }
+
+//     // You can add more filters for diets or other criteria if needed
+
+//     res.status(200).json(filteredRecipes);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
+// http://localhost:3000/api/meals/65a9b94e8422af81b441c57c/recipes?filter[totalTime]=240
+// Fetch filtered recipes for a meal
+// async function getFilteredRecipesForMeal(req, res) {
+//   const { id } = req.params;
+//   console.log("rooooutexxxxx", id);
+//   const { totalTime, diets } = req.query;
+
+//   try {
+//     const meal = await Meal.findById(id).populate("recipes");
+//     console.log("mealTESTINGx", meal);
+//     if (!meal) {
+//       return res.status(404).json({ error: "Meal not found" });
+//     }
+
+//     // If cookingTime is provided, filter recipes based on cooking time
+//     let filteredRecipes = meal.recipes;
+//     if (totalTime) {
+//       filteredRecipes = filteredRecipes.filter(
+//         (recipe) => recipe.totalTime <= parseInt(totalTime)
+//       );
+//     }
+
+//     // You can add more filters for diets or other criteria if needed
+
+//     res.status(200).json(filteredRecipes);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
+// http://localhost:3000/api/meals/65a9b94e8422af81b441c57c/recipes?filter[totalTime]=240
+// Fetch filtered recipes for a meal
+async function getFilteredRecipesForMeal(req, res) {
+  const { id } = req.params;
+  console.log("params", id);
+  const { totalTime, servings } = req.query;
+  console.log("totalTime", totalTime);
+  console.log("servings", servings);
+  console.log("Route hit:", req.url);
+  console.log("Received parameters:", req.params, req.query);
+  try {
+    const meal = await Meal.findById(id).populate("recipes");
+    // console.log("mealTESTINGx", meal);
+    if (!meal) {
+      return res.status(404).json({ error: "Meal not found" });
+    }
+
+    let filteredRecipes = meal.recipes;
+    // If totalTime is provided, filter recipes based on totalTime
+    if (totalTime) {
+      filteredRecipes = filteredRecipes.filter(
+        (recipe) => recipe.totalTime <= parseInt(totalTime)
+      );
+    }
+
+    // If servings is provided, filter recipes based on servings
+    if (servings) {
+      filteredRecipes = filteredRecipes.filter(
+        (recipe) => recipe.servings <= parseInt(servings)
+      );
+    }
+
+    // If no filters applied, return all recipes
+    if (!totalTime && !servings) {
+      filteredRecipes = meal.recipes;
+    }
+    // console.log("filteredRecipes", filteredRecipes);
+    // You can add more filters for diets or other criteria if needed
+
+    res.status(200).json(filteredRecipes);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -104,6 +213,7 @@ async function deleteMeal(req, res) {
 module.exports = {
   getMeals,
   getMealById,
+  getFilteredRecipesForMeal,
   createMeal,
   updateMeal,
   deleteMeal,

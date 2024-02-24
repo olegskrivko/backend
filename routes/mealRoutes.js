@@ -1,6 +1,6 @@
 // routes/mealRoutes.js
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const { validateRequest } = require("../middleware/validation");
 const {
   validateCreateMeal,
@@ -13,6 +13,8 @@ router.get("/", mealController.getMeals);
 
 // Get a specific meal by ID
 router.get("/:id", mealController.getMealById);
+
+router.get("/:id/recipes", mealController.getFilteredRecipesForMeal);
 
 // Create a new meal
 router.post(

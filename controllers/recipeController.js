@@ -10,35 +10,35 @@ async function getAllRecipes(req, res) {
   try {
     // Use .populate() to populate the 'cuisines' field with actual Cuisine documents
     // const recipes = await Recipe.find().populate("cuisines").exec();
-    const recipes = await Recipe.find()
-      .populate("occasions")
-      .populate({
-        path: "reviews",
-        model: "Review",
-        populate: {
-          path: "user",
-          model: "User",
-          select: "username email", // Specify the fields you need
-        },
-      })
-      .populate("meals")
-      .populate("cuisines")
-      .populate("tools")
-      // .populate("times")
-      .populate("diets")
-      .populate("cookingMethods")
-      .populate({
-        path: "instructions.steps",
-        model: "Step",
-      })
-      .populate({
-        path: "ingredients.items.ingredient",
-        model: "Ingredient",
-        populate: {
-          path: "allowedUnits.unit",
-          model: "Unit",
-        },
-      });
+    const recipes = await Recipe.find();
+    // .populate("occasions")
+    // .populate({
+    //   path: "reviews",
+    //   model: "Review",
+    //   populate: {
+    //     path: "user",
+    //     model: "User",
+    //     select: "username email", // Specify the fields you need
+    //   },
+    // })
+    // .populate("meals")
+    // .populate("cuisines")
+    // .populate("tools")
+    // .populate("times")
+    // .populate("diets")
+    // .populate("cookingMethods")
+    // .populate({
+    //   path: "instructions.steps",
+    //   model: "Step",
+    // })
+    // .populate({
+    //   path: "ingredients.items.ingredient",
+    //   model: "Ingredient",
+    //   populate: {
+    //     path: "allowedUnits.unit",
+    //     model: "Unit",
+    //   },
+    // });
 
     // .populate({
     //   path: "ingredients.items.ingredient",
@@ -167,6 +167,14 @@ async function createRecipe(req, res) {
     });
     // console.log(newRecipe)
     await newRecipe.save();
+
+    // Update each meal with the new recipe's ID
+    for (const mealId of meals) {
+      await Meal.findByIdAndUpdate(mealId, {
+        $push: { recipes: newRecipe._id },
+      });
+    }
+
     res.status(201).json(newRecipe);
   } catch (error) {
     errorHandler.handleUnexpectedErrors(error, req, res);
