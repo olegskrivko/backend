@@ -3,10 +3,39 @@ const slugify = require("slugify");
 const CookingMethod = require("../models/cookingMethodModel");
 
 // Get all cooking methods
+// async function getCookingMethods(req, res) {
+//   try {
+//     const cookingMethods = await CookingMethod.find();
+//     res.status(200).json(cookingMethods);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// }
+
+// Get all cooking methods with recipe counts
+// Get all cooking methods with recipe counts
 async function getCookingMethods(req, res) {
   try {
-    const cookingMethods = await CookingMethod.find();
-    res.status(200).json(cookingMethods);
+    // Get all cooking methods and populate the 'recipes' field
+    const cookingMethods = await CookingMethod.find().populate("recipes");
+
+    // Create an array to store cooking methods with counts
+    const cookingMethodsWithCounts = [];
+
+    // Iterate over each cooking method and fetch the count of associated recipes
+    for (const cookingMethod of cookingMethods) {
+      //console.log("cookingMethod.recipes", cookingMethod.recipes);
+      const count = cookingMethod.recipes.length; // Count the number of recipes for the cooking method
+      cookingMethodsWithCounts.push({
+        _id: cookingMethod._id,
+        name: cookingMethod.name,
+        count,
+      });
+    }
+    //console.log("cookingMethodsWithCounts", cookingMethodsWithCounts);
+    // Send the modified array with counts in the response
+    res.status(200).json(cookingMethodsWithCounts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

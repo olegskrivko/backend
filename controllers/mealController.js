@@ -2,13 +2,14 @@
 const slugify = require("slugify");
 const Meal = require("../models/mealModel");
 const Recipe = require("../models/recipeModel"); // Import your Recipe model
+const CookingMethod = require("../models/cookingMethodModel");
 
 // Get all meals
 async function getMeals(req, res) {
   try {
     // Use Mongoose's populate to get meals with populated recipes
     const meals = await Meal.find().populate("recipes");
-    // console.log("meals", meals);
+
     res.status(200).json(meals);
   } catch (error) {
     console.error(error);
@@ -19,13 +20,11 @@ async function getMeals(req, res) {
 // Get a meal by ID
 async function getMealById(req, res) {
   const { id } = req.params;
-  // console.log("id", id);
   try {
     const meal = await Meal.findById(id).populate("recipes");
     if (!meal) {
       return res.status(404).json({ error: "Meal not found" });
     }
-    // console.log("meal", meal);
     res.status(200).json(meal);
   } catch (error) {
     console.error(error);
@@ -97,38 +96,92 @@ async function getMealById(req, res) {
 // Fetch filtered recipes for a meal
 async function getFilteredRecipesForMeal(req, res) {
   const { id } = req.params;
-  console.log("params", id);
-  const { totalTime, servings } = req.query;
-  console.log("totalTime", totalTime);
-  console.log("servings", servings);
-  console.log("Route hit:", req.url);
-  console.log("Received parameters:", req.params, req.query);
+  //console.log("params", id);
+  //console.log("Query parameters:", req.query);
+
+  // Inside getFilteredRecipesForMeal function
+  const { recipeTitle, recipeAuthor, cookingMethods } = req.query;
+  //console.log("recipeTitle:", recipeTitle);
+  //console.log("recipeAuthor:", recipeAuthor);
+
+  // console.log("recipeTitle:", req.query);
+  // console.log("Route hit:", req.url);
+  // console.log("Received parameters:", req.params, req.query);
   try {
-    const meal = await Meal.findById(id).populate("recipes");
-    // console.log("mealTESTINGx", meal);
+    const meal = await Meal.findById(id).populate({
+      path: "recipes",
+      populate: {
+        path: "cookingMethods",
+        model: "CookingMethod", // Should match the 'ref' in the recipeSchema
+      },
+    });
+    //console.log("meal", meal);
     if (!meal) {
       return res.status(404).json({ error: "Meal not found" });
     }
 
     let filteredRecipes = meal.recipes;
-    // If totalTime is provided, filter recipes based on totalTime
-    if (totalTime) {
-      filteredRecipes = filteredRecipes.filter(
-        (recipe) => recipe.totalTime <= parseInt(totalTime)
+
+    // If recipeTitle is provided, filter recipes based on recipe title
+    if (recipeTitle) {
+      filteredRecipes = filteredRecipes.filter((recipe) =>
+        recipe.title.toLowerCase().includes(recipeTitle.toLowerCase())
       );
+    }
+
+    if (recipeAuthor) {
+      filteredRecipes = filteredRecipes.filter((recipe) =>
+        recipe.createdBy.username
+          .toLowerCase()
+          .includes(recipeAuthor.toLowerCase())
+      );
+    }
+
+    if (cookingMethods) {
+      // console.log("cookingMethodsXXX", cookingMethods);
+      const selectedCookingMethods = cookingMethods
+        .split(",")
+        .map((method) => method.trim());
+
+      //console.log("selectedCookingMethods", selectedCookingMethods);
+
+      // Retrieve the IDs of cooking methods based on their names
+      const cookingMethodIds = await CookingMethod.find({
+        name: { $in: selectedCookingMethods },
+      }).distinct("_id");
+      //console.log("cookingMethodIds", cookingMethodIds);
+
+      // Filter recipes based on cooking method IDs
+      filteredRecipes = filteredRecipes.filter((recipe) => {
+        if (!Array.isArray(recipe.cookingMethods)) {
+          // console.log(`Recipe ${recipe.title} has no cooking methods`);
+          return false;
+        }
+
+        const matches = cookingMethodIds.some((methodId) =>
+          recipe.cookingMethods.some((method) => {
+            // console.log(`Checking method ${method.name} with ID ${method._id}`);
+            return method._id.equals(methodId);
+          })
+        );
+
+        //console.log(`Recipe ${recipe.title} matches: ${matches}`);
+
+        return matches;
+      });
     }
 
     // If servings is provided, filter recipes based on servings
-    if (servings) {
-      filteredRecipes = filteredRecipes.filter(
-        (recipe) => recipe.servings <= parseInt(servings)
-      );
-    }
+    // if (servings) {
+    //   filteredRecipes = filteredRecipes.filter(
+    //     (recipe) => recipe.servings <= parseInt(servings)
+    //   );
+    // }
 
     // If no filters applied, return all recipes
-    if (!totalTime && !servings) {
-      filteredRecipes = meal.recipes;
-    }
+    // if (!totalTime && !servings) {
+    //   filteredRecipes = meal.recipes;
+    // }
     // console.log("filteredRecipes", filteredRecipes);
     // You can add more filters for diets or other criteria if needed
 

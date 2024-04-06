@@ -13,6 +13,8 @@ const ingredientRoutes = require("./ingredientRoutes");
 const unitRoutes = require("./unitRoutes");
 const ingredientCategoryRoutes = require("./ingredientCategoryRoutes");
 const timeRoutes = require("./timeRoutes");
+const collectionRoutes = require("./collectionRoutes");
+const tasteRoutes = require("./tasteRoutes");
 const userRoutes = require("./userRoutes");
 
 const {
@@ -35,6 +37,8 @@ router.use("/ingredients", ingredientRoutes);
 router.use("/units", unitRoutes);
 router.use("/ingredient-categories", ingredientCategoryRoutes);
 router.use("/times", timeRoutes);
+router.use("/collections", collectionRoutes);
+router.use("/tastes", tasteRoutes);
 router.use("/users", userRoutes);
 
 module.exports = router;

@@ -54,11 +54,17 @@ const recipeSchema = new mongoose.Schema({
     trim: true,
     maxlength: 250,
   },
+  // difficulty: {
+  //   type: String,
+  //   required: true,
+  //   enum: ["Easy", "Intermediate", "Advanced"],
+  // },
   difficulty: {
-    type: String,
+    type: Number,
     required: true,
-    enum: ["Easy", "Intermediate", "Advanced"],
+    enum: [1, 2, 3], // Mapping numbers to difficulty levels: 1 (Easy), 2 (Intermediate), 3 (Advanced)
   },
+
   meals: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -95,6 +101,12 @@ const recipeSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CookingMethod",
+    },
+  ],
+  collections: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Collection",
     },
   ],
   instructions: [

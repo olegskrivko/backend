@@ -42,6 +42,12 @@ const ingredientSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  state: {
+    type: String,
+    enum: ["solid", "liquid", "powder", "granule", "other"], // Add other states as needed
+    required: true,
+  },
+
   allowedUnits: [
     {
       unit: {

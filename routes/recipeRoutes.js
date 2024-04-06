@@ -16,6 +16,9 @@ const reviewRoutes = require("./reviewRoutes");
 // Get all recipes
 router.get("/", recipeController.getAllRecipes);
 
+// Get all recipe titles
+router.get("/recipe-titles", recipeController.getAllRecipeTitles);
+
 // Get a specific recipe by ID
 router.get("/:id", recipeController.getRecipeById);
 
