@@ -73,7 +73,7 @@ async function getAllRecipes(req, res) {
       recipeTitle,
       // recipeAuthor,
       totalTime,
-      hasReviews,
+      // hasReviews,
       difficulties,
       minimumScore,
       cookingMethods,
@@ -96,20 +96,10 @@ async function getAllRecipes(req, res) {
     }
 
     // Add filter for recipes with reviews
-    if (hasReviews === "true") {
-      filters.reviews = { $exists: true, $ne: [] }; // Filter recipes with non-empty reviews array
-    }
-
-    // Add filter for difficulty
-    // if (difficulty) {
-    //   // Convert the difficulty string to an array of numbers
-    //   const difficultyLevels = difficulty
-    //     .split(",")
-    //     .map((level) => parseInt(level.trim()));
-    //   console.log("difficultyLevels", difficultyLevels);
-    //   // Add the difficulty filter to the query
-    //   filters.difficulty = { $in: difficultyLevels };
+    // if (hasReviews === "true") {
+    //   filters.reviews = { $exists: true, $ne: [] }; // Filter recipes with non-empty reviews array
     // }
+
     // Add filter for difficulty
     if (difficulties) {
       // 10 signifies that the numbers should be parsed as base-10 (decimal) integers
@@ -196,10 +186,28 @@ async function getAllRecipes(req, res) {
     }
 
     // Add filter for included ingredients
-    // Add filter for included ingredients
-    // Add filter for included ingredients
-    // Add filter for included ingredients
+
     // Inside the async function getAllRecipes
+    // Add filter for included ingredients
+    // if (includedIngredients) {
+    //   const includedIngredientIds = includedIngredients
+    //     .split(",")
+    //     .map((ingredientId) => ingredientId.trim());
+
+    //   // Add the filter for included ingredients
+    //   filters["ingredients.items.ingredient"] = { $in: includedIngredientIds };
+    // }
+
+    // // Add filter for excluded ingredients
+    // if (excludedIngredients) {
+    //   const excludedIngredientIds = excludedIngredients
+    //     .split(",")
+    //     .map((ingredientId) => ingredientId.trim());
+
+    //   // Add the filter for excluded ingredients
+    //   filters["ingredients.items.ingredient"] = { $nin: excludedIngredientIds };
+    // }
+
     // Add filter for included ingredients
     if (includedIngredients) {
       const includedIngredientIds = includedIngredients
@@ -207,7 +215,7 @@ async function getAllRecipes(req, res) {
         .map((ingredientId) => ingredientId.trim());
 
       // Add the filter for included ingredients
-      filters["ingredients.items.ingredient"] = { $in: includedIngredientIds };
+      filters["ingredients.items.ingredient"] = { $all: includedIngredientIds };
     }
 
     // Add filter for excluded ingredients
@@ -219,14 +227,6 @@ async function getAllRecipes(req, res) {
       // Add the filter for excluded ingredients
       filters["ingredients.items.ingredient"] = { $nin: excludedIngredientIds };
     }
-
-    // Add filter for excluded ingredients
-    // if (excludedIngredients) {
-    //   const excludedIngredientIds = excludedIngredients
-    //     .split(",")
-    //     .map((id) => mongoose.Types.ObjectId(id.trim()));
-    //   filters["ingredients.items.ingredient"] = { $nin: excludedIngredientIds };
-    // }
 
     // You can add more filters based on your needs
 
