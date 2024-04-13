@@ -18,19 +18,26 @@ const {
 
 const reviewController = require("../controllers/reviewController");
 
-router.post(
-  "/",
-  authenticateToken,
-  isAuthenticated,
-  reviewController.createReview
-);
+// router.post(
+//   "/",
+//   authenticateToken,
+//   isAuthenticated,
+//   reviewController.createReview
+// );
 router.get("/", reviewController.getRecipeReviews);
+
 router.put(
-  "/:reviewId",
+  "/:reviewId?",
   authenticateToken,
   isAuthenticated,
-  reviewController.updateReview
+  reviewController.createOrUpdateReview
 );
+// router.put(
+//   "/:reviewId",
+//   authenticateToken,
+//   isAuthenticated,
+//   reviewController.updateReview
+// );
 router.delete(
   "/:reviewId",
   authenticateToken,

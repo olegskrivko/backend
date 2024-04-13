@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    console.log(req.body);
+    console.log("register user", req.body);
 
     // Hash the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
       email,
       password: hashedPassword,
     });
-
+    console.log("useruser", user);
     await user.save();
 
     res.status(201).json({ message: "User registered successfully" });
@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    console.log(user);
+    console.log("login user", user);
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
